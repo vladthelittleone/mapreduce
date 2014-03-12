@@ -1,6 +1,5 @@
 package client;
 
-import client.loader.FileAddressLoader;
 import client.loader.ServerAddressLoader;
 import client.task.Mappable;
 import client.task.Reducible;
@@ -18,9 +17,10 @@ import java.util.Set;
 public class ClientMapReducer {
     private ServerAddressLoader loader;
 
-    public ClientMapReducer() {}
+    public ClientMapReducer() {
+    }
 
-    public final <T, K extends Reducible<T>> T execute(Task<T, K> task){
+    public final <T, K extends Reducible<T>> T execute(Task<T, K> task) {
         Set<K> tasks = map(task);
         return reduce(task);
     }
@@ -37,8 +37,9 @@ public class ClientMapReducer {
         this.loader = loader;
     }
 
-    private interface Task<T, K extends Reducible<T>> extends Reducible<T>, Mappable<K>{
+    private interface Task<T, K extends Reducible<T>> extends Reducible<T>, Mappable<K> {
         Set<K> getSubTasks(int fragments);
+
         T result();
     }
 
@@ -46,9 +47,4 @@ public class ClientMapReducer {
 
     public static interface MultiplyTask<T> extends Task<T, MultiplyTask<T>>, Reducible<T> {}
 
-    public static void main(String[] args) {
-        ClientMapReducer clientMapReducer = new ClientMapReducer();
-        clientMapReducer.setLoader(new FileAddressLoader());
-        Integer[] array = clientMapReducer.execute(new EratosthenesTask(100));
-    }
 }
