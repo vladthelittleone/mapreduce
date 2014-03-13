@@ -1,4 +1,4 @@
-package client.task;
+package client.core.task;
 
 import java.util.Set;
 

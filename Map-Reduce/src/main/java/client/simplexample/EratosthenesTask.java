@@ -1,8 +1,7 @@
 package client.simplexample;
 
-import client.ClientMapReducer;
-import client.loader.FileAddressLoader;
-import client.task.Reducible;
+import client.core.MapReducer.ReducibleTask;
+import client.core.task.Reducible;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +13,7 @@ import java.util.Set;
  *
  * @author Skurishin Vladislav
  */
-public class EratosthenesTask implements ClientMapReducer.ReducibleTask<Set<Integer>> {
+public class EratosthenesTask implements ReducibleTask<Set<Integer>> {
     private int start;
     private int end;
 
@@ -29,18 +28,16 @@ public class EratosthenesTask implements ClientMapReducer.ReducibleTask<Set<Inte
     }
 
     @Override
-    // TODO
-    // переделать реализацию полностью в будущем. Пока сойдет так.
-    // так же не забывать что это ReducibleTask
-    // Integer[] - не канает
-    public Set<Reducible<Set<Integer>>> getSubTasks(int fragments) {
-        Set<Reducible<Set<Integer>>> tasks = new HashSet<>(fragments);
+    public Set<Reducible<Set<Integer>>> getSubTasks(int executorsNumber) {
+        Set<Reducible<Set<Integer>>> tasks = new HashSet<>(executorsNumber);
 
-        // TODO
-        // Validate fragments = 0;
+        if (executorsNumber == 0) {
+            throw new IllegalStateException("Number of fragmentsNumber (servers) can not be zero.");
+        }
 
+        // при диапозоне равном нулю, возращаем одну задачу.
         if (start == end) {
-            tasks.add(new EratosthenesTask(start, end));
+            tasks.add(new EratosthenesTask(0, end));
             return tasks;
         }
 
@@ -48,66 +45,67 @@ public class EratosthenesTask implements ClientMapReducer.ReducibleTask<Set<Inte
         int step = 1;
         int rest = 0;
 
-        if (range < fragments) {
-            fragments = range;
+        // Если число фрагментов (серверов) больше
+        // диапозона приравниваем их
+        if (range < executorsNumber) {
+            executorsNumber = range;
         } else {
-            step = range / fragments;
-            rest = range % fragments;
+            // Кол-во равномерных распределнных задач на фрагмент (сервер)
+            step = range / executorsNumber;
+            // Остаток задач
+            rest = range % executorsNumber;
         }
 
         int s = end;
 
-        for (int i = 1; i < fragments; i++) {
+        for (int i = 1; i < executorsNumber; i++) {
 
             int rStep = step;
 
             if (rest != 0) {
                 rStep++;
+                // уменьшаем остаток задач
                 rest--;
             }
 
-            tasks.add(new EratosthenesTask(s - rStep, s));
-
-            s -= rStep;
+            tasks.add(new EratosthenesTask(s -= rStep, s));
         }
 
         return tasks;
     }
 
     @Override
-    public Set<Integer> result() {
+    public Set<Integer> execute() {
         return primes(start, end);
     }
 
-    // TODO
-    // Так же переписать.
+    @Override
+    public Set<Integer> reduce(Set<Set<Integer>> results) {
+        Set<Integer> reduce = new HashSet<>();
+
+        for (Set<Integer> result : results) {
+            reduce.addAll(result);
+        }
+
+        return reduce;
+    }
+
     private Set<Integer> primes(int start, int end) {
         Set<Integer> l = new HashSet<>();
+
         for (int i = start; i <= end; i++) {
-            boolean isPrime = true;
-
-            for (int j = 2; j < i; j++) {
-                if (i % j == 0) {
-                    isPrime = false;
-                    break;
-                }
-            }
-
-            if (isPrime) {
+            if (prime(i)) {
                 l.add(i);
             }
         }
+
         return l;
     }
 
-    public static void main(String[] args) {
-        ClientMapReducer clientMapReducer = new ClientMapReducer();
-        clientMapReducer.setLoader(new FileAddressLoader());
-        Set<Integer> array = clientMapReducer.execute(new EratosthenesTask(102));
-
-        for (Integer i : array) {
-            System.out.print(i + " ");
-        }
+    private boolean prime(int n) {
+        for (int i = 2; i <= Math.sqrt(n); i++)
+            if (n % i == 0)
+                return false;
+        return true;
     }
-
 }

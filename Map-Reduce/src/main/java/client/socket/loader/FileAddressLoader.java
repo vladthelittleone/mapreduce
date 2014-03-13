@@ -1,4 +1,4 @@
-package client.loader;
+package client.socket.loader;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -18,21 +18,30 @@ public class FileAddressLoader implements ServerAddressLoader {
     // TODO: через properties.
     private final String PATH = "src/main/resources/addresses.txt";
     private final IPAddressValidator validator = new IPAddressValidator();
+    private Map<String, Long> addresses = new HashMap<>();
 
     @Override
-    public Map<String, Long> getServerAddresses() {
+    public void load() {
         try {
             byte[] bytes = Files.readAllBytes(Paths.get(PATH));
             ByteBuffer mBuf = ByteBuffer.wrap(bytes);
 
             mBuf.rewind();
 
-            return parseBuffer(mBuf);
+            addresses = parseBuffer(mBuf);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(String.format("Some troubles with generating addresses: %s", e.getMessage()));
         }
+    }
 
-        return null;
+    @Override
+    public int getNumberOfServers() {
+        return addresses.size();
+    }
+
+    @Override
+    public Map<String, Long> getServerAddresses() {
+        return addresses;
     }
 
     private Map<String, Long> parseBuffer(final ByteBuffer mBuf) throws NumberFormatException {

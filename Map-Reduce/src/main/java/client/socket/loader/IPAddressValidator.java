@@ -1,4 +1,4 @@
-package client.loader;
+package client.socket.loader;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

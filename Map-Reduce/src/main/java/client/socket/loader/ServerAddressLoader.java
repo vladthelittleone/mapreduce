@@ -1,4 +1,4 @@
-package client.loader;
+package client.socket.loader;
 
 import java.util.Map;
 
@@ -10,5 +10,9 @@ import java.util.Map;
  * @author Skurishin Vladislav
  */
 public interface ServerAddressLoader {
+    void load();
+
+    int getNumberOfServers();
+
     Map<String, Long> getServerAddresses();
 }
