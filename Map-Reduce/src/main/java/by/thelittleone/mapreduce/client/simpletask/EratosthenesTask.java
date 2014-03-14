@@ -1,8 +1,10 @@
-package client.simplexample;
+package by.thelittleone.mapreduce.client.simpletask;
 
-import client.core.MapReducer.ReducibleTask;
-import client.core.task.Reducible;
 
+import by.thelittleone.mapreduce.client.core.MapReducer.ReducibleTask;
+import by.thelittleone.mapreduce.client.core.api.Reducible;
+
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,22 +15,26 @@ import java.util.Set;
  *
  * @author Skurishin Vladislav
  */
-public class EratosthenesTask implements ReducibleTask<Set<Integer>> {
+public class EratosthenesTask implements ReducibleTask<Set<Integer>>, Serializable
+{
     private int start;
     private int end;
 
-    public EratosthenesTask(int end) {
+    public EratosthenesTask(int end)
+    {
         this.start = 1;
         this.end = end;
     }
 
-    private EratosthenesTask(int start, int end) {
+    private EratosthenesTask(int start, int end)
+    {
         this.start = start;
         this.end = end;
     }
 
     @Override
-    public Set<Reducible<Set<Integer>>> getSubTasks(int executorsNumber) {
+    public Set<Reducible<Set<Integer>>> getSubTasks(int executorsNumber)
+    {
         Set<Reducible<Set<Integer>>> tasks = new HashSet<>(executorsNumber);
 
         if (executorsNumber == 0) {
@@ -46,7 +52,7 @@ public class EratosthenesTask implements ReducibleTask<Set<Integer>> {
         int rest = 0;
 
         // Если число фрагментов (серверов) больше
-        // диапозона приравниваем их
+        // диапозона, приравниваем их
         if (range < executorsNumber) {
             executorsNumber = range;
         } else {
@@ -58,9 +64,9 @@ public class EratosthenesTask implements ReducibleTask<Set<Integer>> {
 
         int s = end;
 
-        for (int i = 1; i < executorsNumber; i++) {
+        for (int i = 1; i <= executorsNumber; i++) {
 
-            int rStep = step;
+            int rStep = step - 1;
 
             if (rest != 0) {
                 rStep++;
@@ -68,19 +74,22 @@ public class EratosthenesTask implements ReducibleTask<Set<Integer>> {
                 rest--;
             }
 
-            tasks.add(new EratosthenesTask(s -= rStep, s));
+            tasks.add(new EratosthenesTask(s - rStep, s));
+            s -= (rStep + 1);
         }
 
         return tasks;
     }
 
     @Override
-    public Set<Integer> execute() {
+    public Set<Integer> execute()
+    {
         return primes(start, end);
     }
 
     @Override
-    public Set<Integer> reduce(Set<Set<Integer>> results) {
+    public Set<Integer> reduce(Set<Set<Integer>> results)
+    {
         Set<Integer> reduce = new HashSet<>();
 
         for (Set<Integer> result : results) {
@@ -90,7 +99,8 @@ public class EratosthenesTask implements ReducibleTask<Set<Integer>> {
         return reduce;
     }
 
-    private Set<Integer> primes(int start, int end) {
+    private Set<Integer> primes(int start, int end)
+    {
         Set<Integer> l = new HashSet<>();
 
         for (int i = start; i <= end; i++) {
@@ -102,7 +112,8 @@ public class EratosthenesTask implements ReducibleTask<Set<Integer>> {
         return l;
     }
 
-    private boolean prime(int n) {
+    private boolean prime(int n)
+    {
         for (int i = 2; i <= Math.sqrt(n); i++)
             if (n % i == 0)
                 return false;

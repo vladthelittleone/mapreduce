@@ -1,4 +1,4 @@
-package client.core.task;
+package by.thelittleone.mapreduce.client.core.api;
 
 import java.util.Set;
 
@@ -9,6 +9,7 @@ import java.util.Set;
  *
  * @author Skurishin Vladislav
  */
-public interface Mappable<T extends Reducible> {
+public interface Mappable<T extends Reducible>
+{
     Set<T> getSubTasks(int fragments);
 }

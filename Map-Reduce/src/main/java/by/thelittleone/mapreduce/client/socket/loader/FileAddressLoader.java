@@ -1,11 +1,12 @@
-package client.socket.loader;
+package by.thelittleone.mapreduce.client.socket.loader;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Project: Map-Reduce
@@ -14,14 +15,17 @@ import java.util.Map;
  *
  * @author Skurishin Vladislav
  */
-public class FileAddressLoader implements ServerAddressLoader {
+public class FileAddressLoader implements ServerAddressLoader
+{
     // TODO: через properties.
     private final String PATH = "src/main/resources/addresses.txt";
+
     private final IPAddressValidator validator = new IPAddressValidator();
-    private Map<String, Long> addresses = new HashMap<>();
+    private Queue<InetSocketAddress> addresses = new LinkedList<>();
 
     @Override
-    public void load() {
+    public void load()
+    {
         try {
             byte[] bytes = Files.readAllBytes(Paths.get(PATH));
             ByteBuffer mBuf = ByteBuffer.wrap(bytes);
@@ -29,23 +33,22 @@ public class FileAddressLoader implements ServerAddressLoader {
             mBuf.rewind();
 
             addresses = parseBuffer(mBuf);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             System.err.println(String.format("Some troubles with generating addresses: %s", e.getMessage()));
         }
     }
 
     @Override
-    public int getNumberOfServers() {
-        return addresses.size();
-    }
-
-    @Override
-    public Map<String, Long> getServerAddresses() {
+    public Queue<InetSocketAddress> getServerAddresses()
+    {
         return addresses;
     }
 
-    private Map<String, Long> parseBuffer(final ByteBuffer mBuf) throws NumberFormatException {
-        Map<String, Long> addresses = new HashMap<>();
+    private Queue<InetSocketAddress> parseBuffer(final ByteBuffer mBuf) throws NumberFormatException
+    {
+
+        Queue<InetSocketAddress> addresses = new LinkedList<>();
 
         StringBuilder ipBuilder = new StringBuilder();
         StringBuilder portBuilder = new StringBuilder();
@@ -81,15 +84,18 @@ public class FileAddressLoader implements ServerAddressLoader {
         return addresses;
     }
 
-    private void addAddress(Map<String, Long> addresses, StringBuilder ipBuilder, StringBuilder portBuilder) {
+    private void addAddress(Queue<InetSocketAddress> addresses, StringBuilder ipBuilder, StringBuilder portBuilder)
+    {
         String ip = ipBuilder.toString();
-        Long port = Long.parseLong(portBuilder.toString());
+        Integer port = Integer.parseInt(portBuilder.toString());
 
         if (!validator.validate(ip)) {
             throw new RuntimeException(String.format("Invalid ip - address in file: %s", ip));
         }
 
-        addresses.put(ip, port);
+        InetSocketAddress address = new InetSocketAddress(ip, port);
+        addresses.add(address);
+
         System.out.println(String.format("Load address %s:%s", ip, port));
     }
 
