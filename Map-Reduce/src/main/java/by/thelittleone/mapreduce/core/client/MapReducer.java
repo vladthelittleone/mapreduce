@@ -1,7 +1,8 @@
-package by.thelittleone.mapreduce.client.core;
+package by.thelittleone.mapreduce.core.client;
 
-import by.thelittleone.mapreduce.client.core.api.Mappable;
-import by.thelittleone.mapreduce.client.core.api.Reducible;
+import by.thelittleone.mapreduce.core.client.api.Mappable;
+import by.thelittleone.mapreduce.core.client.api.Reducible;
+import by.thelittleone.mapreduce.core.client.exceptions.CouldNotExecuteTaskException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,19 +17,26 @@ import java.util.Set;
  */
 public abstract class MapReducer
 {
-    public MapReducer()
-    {
-    }
+    public MapReducer() {}
 
-    public final <T, K extends Reducible<T>> T execute(final Task<T, K> task)
+    public final <T, K extends Reducible<T>> T execute(final Task<T, K> task) throws CouldNotExecuteTaskException
     {
         Set<K> tasks = map(task);
         Set<T> results = new HashSet<>();
 
-        results.addAll(sendToExecutor(tasks));
+        Set<T> s = sendToExecutor(tasks);
 
-        if (executeTaskInCurrentThread()) {
-            return task.execute();
+        if (s == null || s.isEmpty()) {
+
+            if (executeNotMappedTask()) {
+                return task.execute();
+            }
+
+            throw new CouldNotExecuteTaskException("method sendToServer() return null or empty set.");
+
+        }
+        else {
+            results.addAll(s);
         }
 
         return task.reduce(results);
@@ -45,14 +53,14 @@ public abstract class MapReducer
         return task.getSubTasks(number);
     }
 
-    protected boolean executeTaskInCurrentThread()
+    protected boolean executeNotMappedTask()
     {
-        return false;
+        return true;
     }
 
     protected abstract int getNumberOfSubTasks();
 
-    protected abstract <T, K extends Reducible<T>> Set<T> sendToExecutor(final Set<? extends K> tasks);
+    protected abstract <T, K extends Reducible<T>> Set<T> sendToExecutor(final Set<? extends K> tasks) throws CouldNotExecuteTaskException;
 
     private interface Task<T, K extends Reducible<T>> extends Reducible<T>, Mappable<K> {}
 

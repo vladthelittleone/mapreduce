@@ -1,8 +1,8 @@
-package by.thelittleone.mapreduce.client.socket.loader;
+package by.thelittleone.mapreduce.core.client.socket.loader;
 
 
 import java.net.InetSocketAddress;
-import java.util.Queue;
+import java.util.ListIterator;
 
 /**
  * Project: Map-Reduce
@@ -15,5 +15,5 @@ public interface ServerAddressLoader
 {
     void load();
 
-    Queue<InetSocketAddress> getServerAddresses();
+    ListIterator<InetSocketAddress> getServerAddresses();
 }

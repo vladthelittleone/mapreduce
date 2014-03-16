@@ -1,4 +1,4 @@
-package by.thelittleone.mapreduce.client.socket.loader;
+package by.thelittleone.mapreduce.core.client.socket.loader;
 
 
 import java.util.regex.Matcher;

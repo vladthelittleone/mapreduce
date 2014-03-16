@@ -1,4 +1,4 @@
-package by.thelittleone.mapreduce.client.socket.loader;
+package by.thelittleone.mapreduce.core.client.socket.loader;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -6,7 +6,8 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Project: Map-Reduce
@@ -17,17 +18,22 @@ import java.util.Queue;
  */
 public class FileAddressLoader implements ServerAddressLoader
 {
-    // TODO: через properties.
-    private final String PATH = "src/main/resources/addresses.txt";
+    private final String path;
 
     private final IPAddressValidator validator = new IPAddressValidator();
-    private Queue<InetSocketAddress> addresses = new LinkedList<>();
+
+    private List<InetSocketAddress> addresses = new LinkedList<>();
+
+    public FileAddressLoader(String path)
+    {
+        this.path = path;
+    }
 
     @Override
     public void load()
     {
         try {
-            byte[] bytes = Files.readAllBytes(Paths.get(PATH));
+            byte[] bytes = Files.readAllBytes(Paths.get(path));
             ByteBuffer mBuf = ByteBuffer.wrap(bytes);
 
             mBuf.rewind();
@@ -35,20 +41,20 @@ public class FileAddressLoader implements ServerAddressLoader
             addresses = parseBuffer(mBuf);
         }
         catch (IOException e) {
-            System.err.println(String.format("Some troubles with generating addresses: %s", e.getMessage()));
+            throw new RuntimeException("Some troubles with generating addresses.", e);
         }
     }
 
     @Override
-    public Queue<InetSocketAddress> getServerAddresses()
+    public ListIterator<InetSocketAddress> getServerAddresses()
     {
-        return addresses;
+        return addresses.listIterator();
     }
 
-    private Queue<InetSocketAddress> parseBuffer(final ByteBuffer mBuf) throws NumberFormatException
+    private List<InetSocketAddress> parseBuffer(final ByteBuffer mBuf) throws NumberFormatException
     {
 
-        Queue<InetSocketAddress> addresses = new LinkedList<>();
+        List<InetSocketAddress> addresses = new LinkedList<>();
 
         StringBuilder ipBuilder = new StringBuilder();
         StringBuilder portBuilder = new StringBuilder();
@@ -84,7 +90,7 @@ public class FileAddressLoader implements ServerAddressLoader
         return addresses;
     }
 
-    private void addAddress(Queue<InetSocketAddress> addresses, StringBuilder ipBuilder, StringBuilder portBuilder)
+    private void addAddress(List<InetSocketAddress> addresses, StringBuilder ipBuilder, StringBuilder portBuilder)
     {
         String ip = ipBuilder.toString();
         Integer port = Integer.parseInt(portBuilder.toString());
@@ -95,8 +101,6 @@ public class FileAddressLoader implements ServerAddressLoader
 
         InetSocketAddress address = new InetSocketAddress(ip, port);
         addresses.add(address);
-
-        System.out.println(String.format("Load address %s:%s", ip, port));
     }
 
 }

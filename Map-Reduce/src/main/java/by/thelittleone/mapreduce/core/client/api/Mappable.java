@@ -1,4 +1,4 @@
-package by.thelittleone.mapreduce.client.core.api;
+package by.thelittleone.mapreduce.core.client.api;
 
 import java.util.Set;
 
