@@ -1,8 +1,7 @@
-package by.thelittleone.mapreduce.client.simpletask;
+package by.thelittleone.mapreduce.simpletask;
 
-
-import by.thelittleone.mapreduce.client.core.MapReducer.ReducibleTask;
-import by.thelittleone.mapreduce.client.core.api.Reducible;
+import by.thelittleone.mapreduce.core.client.MapReducer;
+import by.thelittleone.mapreduce.core.client.api.Reducible;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -15,7 +14,7 @@ import java.util.Set;
  *
  * @author Skurishin Vladislav
  */
-public class EratosthenesTask implements ReducibleTask<Set<Integer>>, Serializable
+public class EratosthenesTask implements MapReducer.ReducibleTask<Set<Integer>>, Serializable
 {
     private int start;
     private int end;
