@@ -4,9 +4,7 @@ package by.thelittleone.mapreduce.core.client.socket;
 import by.thelittleone.mapreduce.core.client.MapReducer;
 import by.thelittleone.mapreduce.core.client.api.Reducible;
 import by.thelittleone.mapreduce.core.client.exceptions.CouldNotExecuteTaskException;
-import by.thelittleone.mapreduce.core.client.socket.loader.FileAddressLoader;
 import by.thelittleone.mapreduce.core.client.socket.loader.ServerAddressLoader;
-import by.thelittleone.mapreduce.simpletask.EratosthenesTask;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -120,8 +118,6 @@ public class SocketMapReducer extends MapReducer
     }
 
 
-
-
     private class HoppingIterator<T>
     {
         private ListIterator<T> itr;
@@ -156,11 +152,5 @@ public class SocketMapReducer extends MapReducer
     public void setExecutingNotSanded(boolean executeNotSandedTasks)
     {
         this.executingNotSanded = executeNotSandedTasks;
-    }
-
-    public static void main(String[] args) throws CouldNotExecuteTaskException
-    {
-        MapReducer socketMapReducer = new SocketMapReducer(new FileAddressLoader("src/main/resources/addresses.txt"), 10);
-        System.out.println(socketMapReducer.execute(new EratosthenesTask(2)));
     }
 }

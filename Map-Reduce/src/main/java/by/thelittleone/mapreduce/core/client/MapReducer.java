@@ -2,11 +2,10 @@ package by.thelittleone.mapreduce.core.client;
 
 import by.thelittleone.mapreduce.core.client.api.Mappable;
 import by.thelittleone.mapreduce.core.client.api.Reducible;
+import by.thelittleone.mapreduce.core.client.api.Unreducible;
 import by.thelittleone.mapreduce.core.client.exceptions.CouldNotExecuteTaskException;
 
-import java.util.HashSet;
 import java.util.Set;
-
 
 /**
  * Project: Map-Reduce
@@ -17,26 +16,22 @@ import java.util.Set;
  */
 public abstract class MapReducer
 {
-    public MapReducer() {}
+    public MapReducer()
+    {
+    }
 
     public final <T, K extends Reducible<T>> T execute(final Task<T, K> task) throws CouldNotExecuteTaskException
     {
         Set<K> tasks = map(task);
-        Set<T> results = new HashSet<>();
+        Set<T> results = sendToExecutor(tasks);
 
-        Set<T> s = sendToExecutor(tasks);
-
-        if (s == null || s.isEmpty()) {
+        if (results == null || results.isEmpty()) {
 
             if (executeNotMappedTask()) {
                 return task.execute();
             }
 
             throw new CouldNotExecuteTaskException("method sendToServer() return null or empty set.");
-
-        }
-        else {
-            results.addAll(s);
         }
 
         return task.reduce(results);
@@ -55,7 +50,7 @@ public abstract class MapReducer
 
     protected boolean executeNotMappedTask()
     {
-        return true;
+        return false;
     }
 
     protected abstract int getNumberOfSubTasks();
@@ -68,6 +63,5 @@ public abstract class MapReducer
 
     public static interface MultiplyTask<T> extends Task<T, MultiplyTask<T>> {}
 
-    //    TODO
-    //    public static interface UnreducibleTask<T> extends Task<T, Reducible<T>> {}
+    public static interface UnreducibleTask extends Task<Boolean, Unreducible> {}
 }

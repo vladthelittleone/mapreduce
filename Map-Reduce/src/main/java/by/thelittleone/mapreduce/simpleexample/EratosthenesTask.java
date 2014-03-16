@@ -1,4 +1,4 @@
-package by.thelittleone.mapreduce.simpletask;
+package by.thelittleone.mapreduce.simpleexample;
 
 import by.thelittleone.mapreduce.core.client.MapReducer;
 import by.thelittleone.mapreduce.core.client.api.Reducible;
@@ -54,7 +54,8 @@ public class EratosthenesTask implements MapReducer.ReducibleTask<Set<Integer>>,
         // диапозона, приравниваем их
         if (range < executorsNumber) {
             executorsNumber = range;
-        } else {
+        }
+        else {
             // Кол-во равномерных распределнных задач на фрагмент (сервер)
             step = range / executorsNumber;
             // Остаток задач
