@@ -1,6 +1,6 @@
 package by.thelittleone.mapreduce.simpleexample;
 
-import by.thelittleone.mapreduce.core.client.MapReducer;
+import by.thelittleone.mapreduce.core.client.MapReduce.ReducibleTask;
 import by.thelittleone.mapreduce.core.client.api.Reducible;
 
 import java.io.Serializable;
@@ -14,7 +14,7 @@ import java.util.Set;
  *
  * @author Skurishin Vladislav
  */
-public class EratosthenesTask implements MapReducer.ReducibleTask<Set<Integer>>, Serializable
+public class EratosthenesTask implements ReducibleTask<Set<Integer>>, Serializable
 {
     private int start;
     private int end;
@@ -79,6 +79,12 @@ public class EratosthenesTask implements MapReducer.ReducibleTask<Set<Integer>>,
         }
 
         return tasks;
+    }
+
+    @Override
+    public int parallelismLevel()
+    {
+        return 0;
     }
 
     @Override
