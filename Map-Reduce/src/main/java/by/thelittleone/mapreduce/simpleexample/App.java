@@ -1,11 +1,8 @@
 package by.thelittleone.mapreduce.simpleexample;
 
-import by.thelittleone.mapreduce.core.client.MapReducer;
-import by.thelittleone.mapreduce.core.client.exceptions.CouldNotExecuteTaskException;
+import by.thelittleone.mapreduce.core.client.AbstractMapReducer;
 import by.thelittleone.mapreduce.core.client.socket.SocketMapReducer;
 import by.thelittleone.mapreduce.core.client.socket.loader.FileAddressLoader;
-
-import java.io.IOException;
 
 /**
  * Project: Map-Reduce
@@ -17,9 +14,9 @@ import java.io.IOException;
 public class App
 {
 
-    public static void main(String[] args) throws CouldNotExecuteTaskException, IOException, ClassNotFoundException
+    public static void main(String[] args) throws Exception
     {
-        MapReducer socketMapReducer = new SocketMapReducer(new FileAddressLoader("src/main/resources/addresses.txt"), 10);
-        System.out.println(socketMapReducer.execute(new EratosthenesTask(10)));
+        AbstractMapReducer socketAbstractMapReducer = new SocketMapReducer(new FileAddressLoader("src/main/resources/addresses.txt"), 10);
+        System.out.println(socketAbstractMapReducer.execute(new EratosthenesTask(10)));
     }
 }

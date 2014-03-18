@@ -12,4 +12,6 @@ import java.util.Set;
 public interface Mappable<T extends Reducible>
 {
     Set<T> getSubTasks(int fragments);
+
+    int parallelismLevel();
 }

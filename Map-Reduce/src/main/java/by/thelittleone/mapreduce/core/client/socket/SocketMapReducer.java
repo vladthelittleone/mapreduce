@@ -1,7 +1,7 @@
 package by.thelittleone.mapreduce.core.client.socket;
 
 
-import by.thelittleone.mapreduce.core.client.MapReducer;
+import by.thelittleone.mapreduce.core.client.AbstractMapReducer;
 import by.thelittleone.mapreduce.core.client.api.Reducible;
 import by.thelittleone.mapreduce.core.client.exceptions.CouldNotExecuteTaskException;
 import by.thelittleone.mapreduce.core.client.socket.loader.ServerAddressLoader;
@@ -22,7 +22,7 @@ import java.util.concurrent.*;
  *
  * @author Skurishin Vladislav
  */
-public class SocketMapReducer extends MapReducer
+public class SocketMapReducer extends AbstractMapReducer
 {
     private HoppingIterator<InetSocketAddress> itr;
 
@@ -34,6 +34,12 @@ public class SocketMapReducer extends MapReducer
     {
         addressLoader.load();
         itr = new HoppingIterator<>(addressLoader.getServerAddresses());
+        this.numberOfSubTasks = numberOfSubTasks;
+    }
+
+    public SocketMapReducer(ListIterator<InetSocketAddress> iterator, Integer numberOfSubTasks)
+    {
+        itr = new HoppingIterator<>(iterator);
         this.numberOfSubTasks = numberOfSubTasks;
     }
 
@@ -116,7 +122,6 @@ public class SocketMapReducer extends MapReducer
             return result;
         }
     }
-
 
     private class HoppingIterator<T>
     {
