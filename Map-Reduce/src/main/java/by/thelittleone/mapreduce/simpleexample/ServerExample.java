@@ -1,6 +1,5 @@
 package by.thelittleone.mapreduce.simpleexample;
 
-import by.thelittleone.mapreduce.core.server.AbstractExecutionPool;
 import by.thelittleone.mapreduce.core.server.SocketExecutionPool;
 
 /**
@@ -14,6 +13,6 @@ public class ServerExample
 {
     public static void main(String[] args) throws Exception
     {
-        AbstractExecutionPool pool = new SocketExecutionPool(500, 6666);
+        new SocketExecutionPool(500, 6666);
     }
 }

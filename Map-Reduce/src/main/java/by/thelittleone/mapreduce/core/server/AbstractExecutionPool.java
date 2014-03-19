@@ -1,6 +1,6 @@
 package by.thelittleone.mapreduce.core.server;
 
-import by.thelittleone.mapreduce.core.client.MapReduce.MultiplyTask;
+import by.thelittleone.mapreduce.core.client.MapReduce.Task;
 import by.thelittleone.mapreduce.core.client.api.Reducible;
 
 import java.util.HashSet;
@@ -33,28 +33,14 @@ public abstract class AbstractExecutionPool extends ForkJoinPool
 
     protected abstract void startExecution() throws Exception;
 
-    protected <T> T execute(final MultiplyTask<T> task)
+    protected <T> T execute(final Task<T> task)
     {
-        return invoke(new MultiplyTaskWrapper<>(task));
+        return invoke(new TaskWrapper<>(task));
     }
 
-    protected <T> T execute(final Reducible<T> task)
+    protected <T> RecursiveTask<T> getTask(final Task<T> task)
     {
-        RecursiveTask<T> recursiveTask = new RecursiveTask<T>()
-        {
-            @Override
-            protected T compute()
-            {
-                return task.execute();
-            }
-        };
-
-        return invoke(recursiveTask);
-    }
-
-    protected <T> RecursiveTask<T> getTask(final MultiplyTask<T> task)
-    {
-        return new MultiplyTaskWrapper<>(task);
+        return new TaskWrapper<>(task);
     }
 
     protected <T> RecursiveTask<T> getTask(final Reducible<T> task)
@@ -69,11 +55,11 @@ public abstract class AbstractExecutionPool extends ForkJoinPool
         };
     }
 
-    private class MultiplyTaskWrapper<T> extends RecursiveTask<T>
+    private class TaskWrapper<T> extends RecursiveTask<T>
     {
-        private MultiplyTask<T> task;
+        private Task<T> task;
 
-        private MultiplyTaskWrapper(MultiplyTask<T> task)
+        private TaskWrapper(Task<T> task)
         {
             this.task = task;
         }
@@ -81,22 +67,22 @@ public abstract class AbstractExecutionPool extends ForkJoinPool
         @Override
         protected T compute()
         {
-            if (limit > task.parallelismLevel()) {
+            if (limit > task.parallelismLevel() || !task.isMappable()) {
                 return task.execute();
             }
             else {
-                Set<MultiplyTask<T>> subTasks = task.getSubTasks(limit);
-                Set<MultiplyTaskWrapper<T>> wrappers = new HashSet<>();
+                Set<Task<T>> subTasks = task.getSubTasks(limit);
+                Set<TaskWrapper<T>> wrappers = new HashSet<>();
 
-                for (MultiplyTask<T> mt : subTasks) {
-                    MultiplyTaskWrapper<T> wrapper = new MultiplyTaskWrapper<>(mt);
+                for (Task<T> mt : subTasks) {
+                    TaskWrapper<T> wrapper = new TaskWrapper<>(mt);
                     wrapper.fork();
                     wrappers.add(wrapper);
                 }
 
                 Set<T> results = new HashSet<>();
 
-                for (MultiplyTaskWrapper<T> tw : wrappers) {
+                for (TaskWrapper<T> tw : wrappers) {
                     results.add(tw.join());
                 }
 

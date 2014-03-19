@@ -1,6 +1,5 @@
 package by.thelittleone.mapreduce.core.client;
 
-import by.thelittleone.mapreduce.core.client.api.Reducible;
 import by.thelittleone.mapreduce.core.client.exceptions.CouldNotExecuteTaskException;
 
 import java.util.Set;
@@ -15,9 +14,9 @@ import java.util.Set;
 public abstract class AbstractMapReducer implements MapReduce
 {
 
-    public final <T, K extends Reducible<T>> T execute(final Task<T, K> task) throws Exception
+    public final <T> T execute(final Task<T> task) throws Exception
     {
-        Set<K> tasks = map(task);
+        Set<Task<T>> tasks = map(task);
         Set<T> results = sendToExecutor(tasks);
 
         if (results == null || results.isEmpty()) {
@@ -32,7 +31,7 @@ public abstract class AbstractMapReducer implements MapReduce
         return task.reduce(results);
     }
 
-    private <T, K extends Reducible<T>> Set<K> map(final Task<T, K> task)
+    private <T> Set<Task<T>> map(final Task<T> task)
     {
         int number = getNumberOfSubTasks();
 
@@ -48,7 +47,7 @@ public abstract class AbstractMapReducer implements MapReduce
         return false;
     }
 
-    protected abstract <T, K extends Reducible<T>> Set<T> sendToExecutor(final Set<? extends K> tasks) throws CouldNotExecuteTaskException;
+    protected abstract <T> Set<T> sendToExecutor(final Set<Task<T>> tasks) throws CouldNotExecuteTaskException;
 
     protected abstract int getNumberOfSubTasks();
 }

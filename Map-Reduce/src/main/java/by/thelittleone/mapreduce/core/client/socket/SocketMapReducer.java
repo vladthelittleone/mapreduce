@@ -44,28 +44,22 @@ public class SocketMapReducer extends AbstractMapReducer
     }
 
     @Override
-    protected int getNumberOfSubTasks()
-    {
-        return numberOfSubTasks;
-    }
-
-    @Override
-    protected <T, K extends Reducible<T>> Set<T> sendToExecutor(Set<? extends K> tasks) throws CouldNotExecuteTaskException
+    protected <T> Set<T> sendToExecutor(Set<Task<T>> tasks) throws CouldNotExecuteTaskException
     {
         ExecutorService es = Executors.newFixedThreadPool(getNumberOfSubTasks());
 
         Set<T> results = new HashSet<>();
-        Map<K, Future<T>> futures = new HashMap<>();
+        Map<Task<T>, Future<T>> futures = new HashMap<>();
 
-        for (K t : tasks) {
+        for (Task<T> t : tasks) {
             Future<T> f = es.submit(new Sender<>(t));
             futures.put(t, f);
         }
 
-        for (Map.Entry<K, Future<T>> e : futures.entrySet()) {
+        for (Map.Entry<Task<T>, Future<T>> e : futures.entrySet()) {
 
             Future<T> f = e.getValue();
-            K task = e.getKey();
+            Task<T> task = e.getKey();
 
             try {
                 results.add(f.get());
@@ -82,7 +76,14 @@ public class SocketMapReducer extends AbstractMapReducer
         }
 
         es.shutdown();
+
         return results;
+    }
+
+    @Override
+    protected int getNumberOfSubTasks()
+    {
+        return numberOfSubTasks;
     }
 
     private class Sender<T> implements Callable<T>
@@ -149,13 +150,13 @@ public class SocketMapReducer extends AbstractMapReducer
         }
     }
 
-    private InetSocketAddress getNextServer()
-    {
-        return itr.get();
-    }
-
     public void setExecutingNotSanded(boolean executeNotSandedTasks)
     {
         this.executingNotSanded = executeNotSandedTasks;
+    }
+
+    private InetSocketAddress getNextServer()
+    {
+        return itr.get();
     }
 }

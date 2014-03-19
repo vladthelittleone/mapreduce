@@ -1,5 +1,7 @@
 package by.thelittleone.mapreduce.core.client.api;
 
+import by.thelittleone.mapreduce.core.client.MapReduce.Task;
+
 import java.util.Set;
 
 /**
@@ -9,9 +11,13 @@ import java.util.Set;
  *
  * @author Skurishin Vladislav
  */
-public interface Mappable<T extends Reducible>
+public interface Mappable<T extends Task<?>>
 {
+    // TODO добавить enum Level;
+
     Set<T> getSubTasks(int fragments);
 
     int parallelismLevel();
+
+    boolean isMappable();
 }

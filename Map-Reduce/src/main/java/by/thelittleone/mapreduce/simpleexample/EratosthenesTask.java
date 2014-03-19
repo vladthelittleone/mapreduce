@@ -1,7 +1,6 @@
 package by.thelittleone.mapreduce.simpleexample;
 
-import by.thelittleone.mapreduce.core.client.MapReduce.ReducibleTask;
-import by.thelittleone.mapreduce.core.client.api.Reducible;
+import by.thelittleone.mapreduce.core.client.MapReduce.Task;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -14,7 +13,7 @@ import java.util.Set;
  *
  * @author Skurishin Vladislav
  */
-public class EratosthenesTask implements ReducibleTask<Set<Integer>>, Serializable
+public class EratosthenesTask implements Task<Set<Integer>>, Serializable
 {
     private int start;
     private int end;
@@ -32,9 +31,9 @@ public class EratosthenesTask implements ReducibleTask<Set<Integer>>, Serializab
     }
 
     @Override
-    public Set<Reducible<Set<Integer>>> getSubTasks(int executorsNumber)
+    public Set<Task<Set<Integer>>> getSubTasks(int executorsNumber)
     {
-        Set<Reducible<Set<Integer>>> tasks = new HashSet<>(executorsNumber);
+        Set<Task<Set<Integer>>> tasks = new HashSet<>(executorsNumber);
 
         if (executorsNumber == 0) {
             throw new IllegalStateException("Number of fragmentsNumber (servers) can not be zero.");
@@ -84,7 +83,13 @@ public class EratosthenesTask implements ReducibleTask<Set<Integer>>, Serializab
     @Override
     public int parallelismLevel()
     {
-        return 0;
+        return end - start;
+    }
+
+    @Override
+    public boolean isMappable()
+    {
+        return !(end <= start);
     }
 
     @Override
