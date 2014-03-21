@@ -81,7 +81,7 @@ public class EratosthenesTask implements Task<Set<Integer>>, Serializable
     }
 
     @Override
-    public int parallelismLevel()
+    public int limit()
     {
         return end - start;
     }

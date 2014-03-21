@@ -18,7 +18,7 @@ import java.util.concurrent.RecursiveTask;
 public abstract class AbstractExecutionPool extends ForkJoinPool
 {
     // Пороговое значение последоватьельного выполнения
-    private int limit = 10;
+    private int limit = Task.MEDIUM_LIMIT;
 
     public AbstractExecutionPool(int limit) throws Exception
     {
@@ -67,7 +67,7 @@ public abstract class AbstractExecutionPool extends ForkJoinPool
         @Override
         protected T compute()
         {
-            if (limit > task.parallelismLevel() || !task.isMappable()) {
+            if (limit > task.limit() || !task.isMappable()) {
                 return task.execute();
             }
             else {
