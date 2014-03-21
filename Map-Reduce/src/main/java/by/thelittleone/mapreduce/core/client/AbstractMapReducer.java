@@ -9,6 +9,18 @@ import java.util.Set;
  * Date: 10.03.14
  * Time: 0:11
  *
+ * Абстрактный класс реализующий интерфейс {@link by.thelittleone.mapreduce.core.client.MapReduce}.
+ * Использует паттер шаблонный метод - execute(), который описывает алгоритм выполнения модели
+ * распределенных вычислений. Метод map() и reduce() являются основой класса и реализуют
+ * разделение задачи на подзадачи, выдача результатов вычисления соответственно. Классы,
+ * наследующие интерфейс, должны реализовать два метода: отправки задачи на выполнение в
+ * {@link by.thelittleone.mapreduce.core.server.AbstractExecutionPool}, количество подзадач для разбения.
+ * С помощью метода executeNotMappedTask() можно задать выполнение задачи в даноом потоке,  на данной машине
+ * в случае ошибки выполнения в executor.
+ *
+ * @see by.thelittleone.mapreduce.core.server.AbstractExecutionPool
+ * @see by.thelittleone.mapreduce.core.client.socket.SocketMapReducer
+ * @see by.thelittleone.mapreduce.core.client.MapReduce
  * @author Skurishin Vladislav
  */
 public abstract class AbstractMapReducer implements MapReduce

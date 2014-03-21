@@ -26,7 +26,7 @@ public class SocketMapReducer extends AbstractMapReducer
 {
     private HoppingIterator<InetSocketAddress> itr;
 
-    private final int numberOfSubTasks;
+    private int numberOfSubTasks;
 
     private boolean executingNotSanded = false;
 
@@ -158,5 +158,9 @@ public class SocketMapReducer extends AbstractMapReducer
     private InetSocketAddress getNextServer()
     {
         return itr.get();
+    }
+
+    private void setNumberOfSubTasks(int numberOfSubTasks){
+        this.numberOfSubTasks = numberOfSubTasks;
     }
 }
