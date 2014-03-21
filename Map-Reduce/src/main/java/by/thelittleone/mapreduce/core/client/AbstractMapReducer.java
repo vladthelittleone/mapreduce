@@ -10,9 +10,9 @@ import java.util.Set;
  * Time: 0:11
  *
  * Абстрактный класс реализующий интерфейс {@link by.thelittleone.mapreduce.core.client.MapReduce}.
- * Использует паттер шаблонный метод - execute(), который описывает алгоритм выполнения модели
- * распределенных вычислений. Метод map() и reduce() являются основой класса и реализуют
- * разделение задачи на подзадачи, выдача результатов вычисления соответственно. Классы,
+ * Использует паттер шаблонный метод - {@link this#execute(by.thelittleone.mapreduce.core.client.MapReduce.Task)},
+ * который описывает алгоритм выполнения модели распределенных вычислений. Метод map() и reduce() являются
+ * основой класса и реализуют разделение задачи на подзадачи, выдача результатов вычисления соответственно. Классы,
  * наследующие интерфейс, должны реализовать два метода: отправки задачи на выполнение в
  * {@link by.thelittleone.mapreduce.core.server.AbstractExecutionPool}, количество подзадач для разбения.
  * С помощью метода executeNotMappedTask() можно задать выполнение задачи в даноом потоке,  на данной машине
@@ -26,6 +26,22 @@ import java.util.Set;
 public abstract class AbstractMapReducer implements MapReduce
 {
 
+    /**
+     * Метод распределяет задачу на подзадачи, с помощью метода
+     * {@link this#map(by.thelittleone.mapreduce.core.client.MapReduce.Task)}.
+     * Затем отправляет ее в {@link by.thelittleone.mapreduce.core.server.AbstractExecutionPool}
+     * для обработки. В случае ошибки, либо обрабатываем в данном потоке, либо пробрасываем исключение.
+     * Если результат получен от подзадач, то сливаем его в один результат, с помощью метода
+     * {@link by.thelittleone.mapreduce.core.client.MapReduce.Task#reduce(java.util.Set)}
+     *
+     * @see by.thelittleone.mapreduce.core.client.MapReduce
+     * @see by.thelittleone.mapreduce.core.client.MapReduce.Task
+     * @param task - задача для распределения и последующего выполнения.
+     * @param <T> - тип возращавемого результата вычисления.
+     * @return - возвращает результат вычисления задачи.
+     * @throws CouldNotExecuteTaskException
+     * @throws Exception
+     */
     public final <T> T execute(final Task<T> task) throws Exception
     {
         Set<Task<T>> tasks = map(task);
