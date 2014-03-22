@@ -34,9 +34,10 @@ public interface Mappable<T extends Task<?>> {
      * которые реализуют интерфейс {@link by.thelittleone.mapreduce.core.client.MapReduce.Task}.
      *
      * @param fragments - предел количества подзадач.
+     * @throws java.lang.Exception
      * @return множество подзадач.
      */
-    Set<T> getSubTasks(int fragments);
+    Set<T> getSubTasks(int fragments) throws Exception;
 
     /**
      * Пороговое значение последовательного выполнения для фрэймворка {@link java.util.concurrent.ForkJoinPool}.

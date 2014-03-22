@@ -5,7 +5,7 @@ package by.thelittleone.mapreduce.core.client.exceptions;
  * Date: 16.03.14
  * Time: 16:15
  * <p/>
- * Исключение, получаемое при невозможности выполнения задачи.
+ * Исключение, получаемое при невозможности выполнения задачи на удаленном исполнителе.
  *
  * @author Skurishin Vladislav
  */

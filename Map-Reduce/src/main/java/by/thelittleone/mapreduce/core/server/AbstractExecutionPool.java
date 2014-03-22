@@ -65,13 +65,19 @@ public abstract class AbstractExecutionPool extends ForkJoinPool
         }
 
         @Override
-        protected T compute()
-        {
+        protected T compute() {
             if (limit > task.limit() || !task.isMappable()) {
                 return task.execute();
             }
             else {
-                Set<Task<T>> subTasks = task.getSubTasks(limit);
+                Set<Task<T>> subTasks = null;
+
+                try {
+                    subTasks = task.getSubTasks(limit);
+                } catch (Exception e) {
+                    return task.execute();
+                }
+
                 Set<TaskWrapper<T>> wrappers = new HashSet<>();
 
                 for (Task<T> mt : subTasks) {
