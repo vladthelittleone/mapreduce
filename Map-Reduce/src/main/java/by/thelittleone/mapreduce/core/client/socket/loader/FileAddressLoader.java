@@ -13,7 +13,11 @@ import java.util.ListIterator;
  * Project: Map-Reduce
  * Date: 10.03.14
  * Time: 2:08
+ * Класс, реализующий интерфейс {@link by.thelittleone.mapreduce.core.client.socket.loader.ServerAddressLoader}
+ * и загружающий адресса сокет сервера из файла.
+ * Файл должен содержать в кажой строке шаблон: {@code ip - адресс : порт}
  *
+ * @see by.thelittleone.mapreduce.core.client.socket.loader.ServerAddressLoader
  * @author Skurishin Vladislav
  */
 public class FileAddressLoader implements ServerAddressLoader
@@ -29,6 +33,12 @@ public class FileAddressLoader implements ServerAddressLoader
         this.path = path;
     }
 
+    /**
+     * Чтение файла, путь к которому указан с помощью консруктора и
+     * последующий вызов методов парсящих данный файл.
+     *
+     * @throws java.lang.RuntimeException
+     */
     @Override
     public void load()
     {
@@ -45,12 +55,23 @@ public class FileAddressLoader implements ServerAddressLoader
         }
     }
 
+    /**
+     * @return Возвращает итератор адрессов серверов.
+     */
     @Override
     public ListIterator<InetSocketAddress> getServerAddresses()
     {
         return addresses.listIterator();
     }
 
+    /**
+     * Метод получает из буффера ip - адресса и порты серверов.
+     * Каждая строка проверяется валидатором {@link by.thelittleone.mapreduce.core.client.socket.loader.IPAddressValidator}.
+     *
+     * @param mBuf - буффер данных.
+     * @return - возвращает список адрессов.
+     * @throws NumberFormatException
+     */
     private List<InetSocketAddress> parseBuffer(final ByteBuffer mBuf) throws NumberFormatException
     {
 
@@ -59,11 +80,13 @@ public class FileAddressLoader implements ServerAddressLoader
         StringBuilder ipBuilder = new StringBuilder();
         StringBuilder portBuilder = new StringBuilder();
 
+        // Ссылка на билдер
         StringBuilder latch = ipBuilder;
 
         do {
             char c = (char) mBuf.get();
 
+            // В случае конца строки переключаемся на ip - билдер
             if (c == '\n') {
                 addAddress(addresses, ipBuilder, portBuilder);
 
@@ -74,6 +97,7 @@ public class FileAddressLoader implements ServerAddressLoader
                 continue;
             }
 
+            // В случае двоеточия переключаемся на билдер порта
             if (c == ':') {
                 latch = portBuilder;
                 continue;
@@ -90,6 +114,14 @@ public class FileAddressLoader implements ServerAddressLoader
         return addresses;
     }
 
+    /**
+     * Выполняет валидацию ip, и передает {@link java.net.InetSocketAddress} в список.
+     *
+     * @see #parseBuffer(java.nio.ByteBuffer)
+     * @param addresses - список адрессов.
+     * @param ipBuilder - билдер ip.
+     * @param portBuilder - билдер порта.
+     */
     private void addAddress(List<InetSocketAddress> addresses, StringBuilder ipBuilder, StringBuilder portBuilder)
     {
         String ip = ipBuilder.toString();

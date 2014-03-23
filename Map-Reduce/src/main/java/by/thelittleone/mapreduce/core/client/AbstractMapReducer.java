@@ -65,6 +65,8 @@ public abstract class AbstractMapReducer implements MapReduce {
      * @param results - результаты вычисления подзадач.
      * @param tasks   - множество подзадач.
      * @param <T>     - тип результата вычисления.
+     * @see by.thelittleone.mapreduce.core.client.exceptions.CouldNotExecuteTaskException
+     * @see by.thelittleone.mapreduce.core.client.exceptions.CouldNotMapTaskException
      * @throws CouldNotExecuteTaskException
      * @throws CouldNotMapTaskException
      */

@@ -9,11 +9,24 @@ import java.util.ListIterator;
  * Date: 10.03.14
  * Time: 2:06
  *
+ * Интерфейс, отвечающий за загрузку адрессов удаленных сокет серверов
+ * в {@link by.thelittleone.mapreduce.core.client.socket.SocketMapReducer}.
+ *
+ * @see by.thelittleone.mapreduce.core.client.socket.SocketMapReducer
+ * @see by.thelittleone.mapreduce.core.client.socket.loader.FileAddressLoader
  * @author Skurishin Vladislav
  */
 public interface ServerAddressLoader
 {
+    /**
+     * Метод выполняет загрузку адрессов, каким образом
+     * зависит от реализации.
+     */
     void load();
 
+    /**
+     * Возвращает итератор с элементами {@link java.net.InetSocketAddress}, который содержит
+     * адресс сокет сервера.
+     */
     ListIterator<InetSocketAddress> getServerAddresses();
 }

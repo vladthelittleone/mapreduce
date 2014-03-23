@@ -20,14 +20,22 @@ import java.util.concurrent.*;
  * Date: 13.03.14
  * Time: 18:43
  *
+ * Реализация абстрактного класса {@link by.thelittleone.mapreduce.core.client.AbstractMapReducer}.
+ * Обеспечивает взаимодействие с "нодами" с помощью сокетов.
+ *
+ * @see by.thelittleone.mapreduce.core.client.MapReduce
+ * @see by.thelittleone.mapreduce.core.client.AbstractMapReducer
  * @author Skurishin Vladislav
  */
 public class SocketMapReducer extends AbstractMapReducer
 {
+    // "Прыгающий" итератор адрессов.
     private HoppingIterator<InetSocketAddress> itr;
 
+    // количество подзадач.
     private int numberOfSubTasks;
 
+    // выполнение не отправленных.
     private boolean executingNotSanded = false;
 
     public SocketMapReducer(ServerAddressLoader addressLoader, Integer numberOfSubTasks)
@@ -43,6 +51,21 @@ public class SocketMapReducer extends AbstractMapReducer
         this.numberOfSubTasks = numberOfSubTasks;
     }
 
+    /**
+     * Отправка подзадач на сокет сервер {@link by.thelittleone.mapreduce.core.server.SocketExecutionPool},
+     * который их выполнит и вернет результат. Количество отправляемых задач - {@link #getNumberOfSubTasks()}.
+     * Для каждой задачи выделяется поток {@link by.thelittleone.mapreduce.core.client.socket.SocketMapReducer.Sender},
+     * который создает для него сокет и отправляет/получает подзадачи/результаты вычислений. Метод ожидает выполнения каждой
+     * подазадачи и в результате возвращает множество результатов. В случае неудачи, есть возможность с помощью
+     * {@link #executeNotMappedTask()} определить выполнение задачи в вызывающем потоке.
+     *
+     * @param tasks - подзадачи для выполнения.
+     * @param <T> - тип результата вычислений.
+     * @see by.thelittleone.mapreduce.core.client.socket.SocketMapReducer.Sender
+     * @see by.thelittleone.mapreduce.core.server.SocketExecutionPool
+     * @return - возвращает множество результатов вычислений подзадач.
+     * @throws CouldNotExecuteTaskException
+     */
     @Override
     protected <T> Set<T> sendToExecutor(Set<Task<T>> tasks) throws CouldNotExecuteTaskException
     {
@@ -58,6 +81,7 @@ public class SocketMapReducer extends AbstractMapReducer
 
         for (Map.Entry<Task<T>, Future<T>> e : futures.entrySet()) {
 
+            // Ждем выполнения.
             Future<T> f = e.getValue();
             Task<T> task = e.getKey();
 
@@ -80,12 +104,28 @@ public class SocketMapReducer extends AbstractMapReducer
         return results;
     }
 
+    /**
+     * Метод, отвечающий за количество подзадач, которые будут получены
+     * с помощью метода {@link #map(by.thelittleone.mapreduce.core.client.MapReduce.Task)}
+     * для выполняемой задачи.
+     *
+     * @see by.thelittleone.mapreduce.core.client.AbstractMapReducer
+     * @see by.thelittleone.mapreduce.core.client.MapReduce.Task
+     * @return количество подзадач.
+     */
     @Override
     protected int getNumberOfSubTasks()
     {
         return numberOfSubTasks;
     }
 
+    /**
+     * Класс реализующий {@link java.util.concurrent.Callable},
+     * который отправляет задание на сокет сервер - {@link by.thelittleone.mapreduce.core.server.SocketExecutionPool}
+     * и получает от него ответ.
+     *
+     * @param <T> - тип результата выислений.
+     */
     private class Sender<T> implements Callable<T>
     {
         Reducible<T> task;
@@ -124,6 +164,10 @@ public class SocketMapReducer extends AbstractMapReducer
         }
     }
 
+    /**
+     * Итератор, проходящий по коллекции аналогично "попрыгунчику".
+     * @param <T> - тип элементов.
+     */
     private class HoppingIterator<T>
     {
         private ListIterator<T> itr;
@@ -135,6 +179,10 @@ public class SocketMapReducer extends AbstractMapReducer
             this.itr = itr;
         }
 
+        /**
+         * Синхронизованный метод получения следующего элемента.
+         * @return - элемент итератора.
+         */
         public synchronized T get()
         {
 

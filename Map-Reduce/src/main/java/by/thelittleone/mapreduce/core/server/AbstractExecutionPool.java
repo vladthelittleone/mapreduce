@@ -13,12 +13,22 @@ import java.util.concurrent.RecursiveTask;
  * Date: 18.03.14
  * Time: 13:14
  *
+ * Класс, отвечающий за запуск запуск полученных задач c {@link by.thelittleone.mapreduce.core.client.AbstractMapReducer}.
+ * Наследуется от {@link java.util.concurrent.ForkJoinPool} в результате чего является пуллом, в котором можно запускать
+ * параллельные вычислительные процессы - {@link java.util.concurrent.ForkJoinTask} и так же использовать другие функции
+ * данного фрэймворка.
+ *
+ * @see by.thelittleone.mapreduce.core.server.AbstractExecutionPool
+ * @see by.thelittleone.mapreduce.core.client.MapReduce.Task
+ * @see java.util.concurrent.ForkJoinPool - советую почитать внимательней.
  * @author Skurishin Vladislav
  */
 public abstract class AbstractExecutionPool extends ForkJoinPool
 {
     // Пороговое значение последоватьельного выполнения
     private int limit = Task.MEDIUM_LIMIT;
+
+    public AbstractExecutionPool() throws Exception {}
 
     public AbstractExecutionPool(int limit) throws Exception
     {
@@ -31,32 +41,49 @@ public abstract class AbstractExecutionPool extends ForkJoinPool
         this.limit = limit;
     }
 
+    /**
+     * Абстрактный метод, запускающий выполнение запросов от
+     * {@link by.thelittleone.mapreduce.core.client.AbstractMapReducer}.
+     * @throws Exception
+     */
     protected abstract void startExecution() throws Exception;
 
+    /**
+     * Выполнение задачи в пулле.
+     *
+     * @see java.util.concurrent.ForkJoinPool#invoke(java.util.concurrent.ForkJoinTask)
+     * @param task - задача для выполнения.
+     * @param <T> - тип возвращаемого результата выполнения.
+     * @return - результат выполнения задачи.
+     */
     protected <T> T execute(final Task<T> task)
     {
         return invoke(new TaskWrapper<>(task));
     }
 
+    /**
+     * Аналогично {@link #execute(by.thelittleone.mapreduce.core.client.MapReduce.Task)} только
+     * вместо выполнения, возвращает сам {@link java.util.concurrent.ForkJoinTask}.
+     *
+     * @param task - задача для выполнения.
+     * @param <T> - тип возвращаемого результата выполнения.
+     * @return - {@link java.util.concurrent.RecursiveTask} для выполнения.
+     */
     protected <T> RecursiveTask<T> getTask(final Task<T> task)
     {
         return new TaskWrapper<>(task);
     }
 
-    protected <T> RecursiveTask<T> getTask(final Reducible<T> task)
-    {
-        return new RecursiveTask<T>()
-        {
-            @Override
-            protected T compute()
-            {
-                return task.execute();
-            }
-        };
-    }
-
+    /**
+     * Обертка вокруг класса {@link Task} для выполнения в {@link java.util.concurrent.ForkJoinPool}.
+     *
+     * @see java.util.concurrent.ForkJoinPool
+     * @see java.util.concurrent.ForkJoinTask
+     * @param <T> - тип возвращаемого результата.
+     */
     private class TaskWrapper<T> extends RecursiveTask<T>
     {
+        // задача для выполнения
         private Task<T> task;
 
         private TaskWrapper(Task<T> task)
@@ -66,6 +93,7 @@ public abstract class AbstractExecutionPool extends ForkJoinPool
 
         @Override
         protected T compute() {
+            // Проверяем делимость задачи и пороговое значение.
             if (limit > task.limit() || !task.isMappable()) {
                 return task.execute();
             }
@@ -73,8 +101,10 @@ public abstract class AbstractExecutionPool extends ForkJoinPool
                 Set<Task<T>> subTasks = null;
 
                 try {
+                    // делим на подзадачи для параллельного вычисления с помощью ForkJoinPool.
                     subTasks = task.getSubTasks(limit);
                 } catch (Exception e) {
+                    // выполняем в случае ошибки без деления.
                     return task.execute();
                 }
 
@@ -92,6 +122,7 @@ public abstract class AbstractExecutionPool extends ForkJoinPool
                     results.add(tw.join());
                 }
 
+                // сливаем полученные результаты.
                 return task.reduce(results);
             }
         }

@@ -17,13 +17,26 @@ import java.util.concurrent.ForkJoinTask;
  * Date: 19.03.14
  * Time: 0:26
  *
+ * Класс - сокет сервер, отвечающий за запуск запуск полученных задач
+ * c {@link by.thelittleone.mapreduce.core.client.socket.SocketMapReducer} с
+ * помощью сокет соединения и возврата результатов вычислений. Является реализации
+ * абстрактного класса {@link by.thelittleone.mapreduce.core.server.AbstractExecutionPool}.
+ *
+ * @see by.thelittleone.mapreduce.core.server.AbstractExecutionPool
+ * @see by.thelittleone.mapreduce.core.client.socket.SocketMapReducer
  * @author Skurishin Vladislav
  */
 public class SocketExecutionPool extends AbstractExecutionPool
 {
-    public int port;
+    // Порт сокет сервера
+    private int port;
 
-    public ExecutorService executorService = Executors.newCachedThreadPool();
+    private ExecutorService executorService = Executors.newCachedThreadPool();
+
+    public SocketExecutionPool(int port) throws Exception {
+        super();
+        this.port = port;
+    }
 
     public SocketExecutionPool(int limit, int port) throws Exception
     {
@@ -39,6 +52,12 @@ public class SocketExecutionPool extends AbstractExecutionPool
         startExecution();
     }
 
+    /**
+     * Метод запускает прослушивание порта на предмет сокет соединения
+     * {@link by.thelittleone.mapreduce.core.client.socket.SocketMapReducer},
+     * передающего задание для выполнения.
+     * @throws Exception
+     */
     @Override
     protected void startExecution() throws Exception
     {
@@ -55,6 +74,9 @@ public class SocketExecutionPool extends AbstractExecutionPool
         }
     }
 
+    /**
+     * Завершить работу пулла.
+     */
     @Override
     public void shutdown()
     {
@@ -62,6 +84,11 @@ public class SocketExecutionPool extends AbstractExecutionPool
         executorService.shutdown();
     }
 
+    /**
+     * Класс, реализующий {@link java.lang.Runnable}, который получает задание от
+     * сокета {@link by.thelittleone.mapreduce.core.client.socket.SocketMapReducer} и
+     * формирует {@link java.util.concurrent.ForkJoinTask} для выполнения и получения результата.
+     */
     private class ResultSender implements Runnable
     {
         private Socket s;
