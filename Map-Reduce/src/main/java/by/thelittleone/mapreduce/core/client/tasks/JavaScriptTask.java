@@ -15,40 +15,45 @@ import java.util.Set;
 * Date: 19.03.14
 * Time: 2:40
 * <p>
-* TODO
-* подумать, как разделить.
+* Нужно использовать jdk8!
+* Задача выполняемая на JavaScript с помощью Nashorn.
+* Неразделяемая на части.
 *
 * @author Skurishin Vladislav
 */
 public class JavaScriptTask implements Task<Object>
 {
-    private String methodName;
+    private String initMethod;
 
     private Reader reader;
 
     private ScriptEngine engine;
 
-    public JavaScriptTask(String methodName, Reader reader)
+    public JavaScriptTask(String initMethod, Reader reader)
     {
         ScriptEngineManager mgr = new ScriptEngineManager();
 
         this.engine = mgr.getEngineByName("nashorn");
-        this.methodName = methodName;
+        this.initMethod = initMethod;
         this.reader = reader;
     }
 
-    public JavaScriptTask(String methodName, String path) throws UnsupportedEncodingException, FileNotFoundException
+    public JavaScriptTask(String initMethod, String path) throws UnsupportedEncodingException, FileNotFoundException
     {
-        this.methodName = methodName;
+        this.initMethod = initMethod;
         this.reader = load(path);
     }
 
+    /**
+     * Выполняет Java Script метод {@link #initMethod}.
+     * @return возврашает результат выполнения задачи.
+     */
     @Override
     public Object execute()
     {
         try {
             engine.eval(reader);
-            return ((Invocable) engine).invokeFunction(methodName);
+            return ((Invocable) engine).invokeFunction(initMethod);
         }
         catch (ScriptException | NoSuchMethodException e) {
             e.printStackTrace();
@@ -69,18 +74,33 @@ public class JavaScriptTask implements Task<Object>
         return new InputStreamReader(file, "UTF-8");
     }
 
+    /**
+     * @param results возвращает результат выполнения задачи.
+     * @return
+     */
     @Override
     public Object reduce(Set<Object> results)
     {
         return results;
     }
 
+    /**
+     * @see by.thelittleone.mapreduce.core.client.MapReduce
+     * @see by.thelittleone.mapreduce.core.client.AbstractMapReducer
+     * @param fragments - предел количества подзадач.
+     * @return возвращаем пустую коллекцию.
+     */
     @Override
     public Set<Task<Object>> getSubTasks(int fragments)
     {
         return Collections.emptySet();
     }
 
+    /**
+     * @see java.util.concurrent.ForkJoinPool
+     * @see by.thelittleone.mapreduce.core.server.AbstractExecutionPool
+     * @return возвращаем 0, так как задача не делится.
+     */
     @Override
     public int limit()
     {
