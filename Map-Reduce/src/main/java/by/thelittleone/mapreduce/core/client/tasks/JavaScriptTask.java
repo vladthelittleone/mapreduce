@@ -19,6 +19,9 @@ import java.util.Set;
 * Задача выполняемая на JavaScript с помощью Nashorn.
 * Неразделяемая на части.
 *
+* @see by.thelittleone.mapreduce.core.client.MapReduce.Task 
+* @see by.thelittleone.mapreduce.core.client.MapReduce
+* @see by.thelittleone.mapreduce.core.client.AbstractMapReducer
 * @author Skurishin Vladislav
 */
 public class JavaScriptTask implements Task<Object>
