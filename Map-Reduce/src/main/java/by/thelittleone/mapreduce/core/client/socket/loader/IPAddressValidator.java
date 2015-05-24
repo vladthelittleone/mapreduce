@@ -14,7 +14,8 @@ import java.util.regex.Pattern;
  * @author Skurishin Vladislav
  */
 
-public class IPAddressValidator {
+public class IPAddressValidator
+{
     private Pattern pattern;
 
     private static final String IP_ADDRESS_PATTERN =
@@ -23,7 +24,8 @@ public class IPAddressValidator {
                     "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
                     "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 
-    public IPAddressValidator() {
+    public IPAddressValidator()
+    {
         pattern = Pattern.compile(IP_ADDRESS_PATTERN);
     }
 
@@ -33,7 +35,8 @@ public class IPAddressValidator {
      * @param ip ip - адресс для валидации.
      * @return true - валидный ip, false - не валидный ip
      */
-    public boolean validate(final String ip) {
+    public boolean validate(final String ip)
+    {
         Matcher matcher = pattern.matcher(ip);
         return matcher.matches();
     }

@@ -8,13 +8,13 @@ import java.util.ListIterator;
  * Project: Map-Reduce
  * Date: 10.03.14
  * Time: 2:06
- *
+ * <p/>
  * Интерфейс, отвечающий за загрузку адрессов удаленных сокет серверов
  * в {@link by.thelittleone.mapreduce.core.client.socket.SocketMapReducer}.
  *
+ * @author Skurishin Vladislav
  * @see by.thelittleone.mapreduce.core.client.socket.SocketMapReducer
  * @see by.thelittleone.mapreduce.core.client.socket.loader.FileAddressLoader
- * @author Skurishin Vladislav
  */
 public interface ServerAddressLoader
 {

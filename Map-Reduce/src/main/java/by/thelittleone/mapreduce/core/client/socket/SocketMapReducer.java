@@ -19,13 +19,13 @@ import java.util.concurrent.*;
  * Project: Map-Reduce
  * Date: 13.03.14
  * Time: 18:43
- *
+ * <p/>
  * Реализация абстрактного класса {@link by.thelittleone.mapreduce.core.client.AbstractMapReducer}.
  * Обеспечивает взаимодействие с "нодами" с помощью сокетов.
  *
+ * @author Skurishin Vladislav
  * @see by.thelittleone.mapreduce.core.client.MapReduce
  * @see by.thelittleone.mapreduce.core.client.AbstractMapReducer
- * @author Skurishin Vladislav
  */
 public class SocketMapReducer extends AbstractMapReducer
 {
@@ -35,17 +35,17 @@ public class SocketMapReducer extends AbstractMapReducer
     // количество подзадач.
     private int numberOfSubTasks;
 
-    // выполнение не отправленных.
+    // выполнение неотправленных.
     private boolean executingNotSanded = false;
 
-    public SocketMapReducer(ServerAddressLoader addressLoader, Integer numberOfSubTasks)
+    public SocketMapReducer(ServerAddressLoader addressLoader, int numberOfSubTasks)
     {
         addressLoader.load();
         itr = new HoppingIterator<>(addressLoader.getServerAddresses());
         this.numberOfSubTasks = numberOfSubTasks;
     }
 
-    public SocketMapReducer(ListIterator<InetSocketAddress> iterator, Integer numberOfSubTasks)
+    public SocketMapReducer(ListIterator<InetSocketAddress> iterator, int numberOfSubTasks)
     {
         itr = new HoppingIterator<>(iterator);
         this.numberOfSubTasks = numberOfSubTasks;
@@ -60,11 +60,11 @@ public class SocketMapReducer extends AbstractMapReducer
      * {@link #executeNotMappedTask()} определить выполнение задачи в вызывающем потоке.
      *
      * @param tasks - подзадачи для выполнения.
-     * @param <T> - тип результата вычислений.
-     * @see by.thelittleone.mapreduce.core.client.socket.SocketMapReducer.Sender
-     * @see by.thelittleone.mapreduce.core.server.SocketExecutionPool
+     * @param <T>   - тип результата вычислений.
      * @return - возвращает множество результатов вычислений подзадач.
      * @throws CouldNotExecuteTaskException
+     * @see by.thelittleone.mapreduce.core.client.socket.SocketMapReducer.Sender
+     * @see by.thelittleone.mapreduce.core.server.SocketExecutionPool
      */
     @Override
     protected <T> Set<T> sendToExecutor(Set<Task<T>> tasks) throws CouldNotExecuteTaskException
@@ -74,23 +74,28 @@ public class SocketMapReducer extends AbstractMapReducer
         Set<T> results = new HashSet<>();
         Map<Task<T>, Future<T>> futures = new HashMap<>();
 
-        for (Task<T> t : tasks) {
+        for (Task<T> t : tasks)
+        {
             Future<T> f = es.submit(new Sender<>(t));
             futures.put(t, f);
         }
 
-        for (Map.Entry<Task<T>, Future<T>> e : futures.entrySet()) {
+        for (Map.Entry<Task<T>, Future<T>> e : futures.entrySet())
+        {
 
             // Ждем выполнения.
             Future<T> f = e.getValue();
             Task<T> task = e.getKey();
 
-            try {
+            try
+            {
                 results.add(f.get());
             }
-            catch (InterruptedException | ExecutionException ex) {
+            catch (InterruptedException | ExecutionException ex)
+            {
 
-                if (!executingNotSanded) {
+                if (!executingNotSanded)
+                {
                     throw new CouldNotExecuteTaskException("Could not execute sub task on server.", ex);
                 }
 
@@ -109,9 +114,9 @@ public class SocketMapReducer extends AbstractMapReducer
      * с помощью метода {@link #map(by.thelittleone.mapreduce.core.client.MapReduce.Task)}
      * для выполняемой задачи.
      *
+     * @return количество подзадач.
      * @see by.thelittleone.mapreduce.core.client.AbstractMapReducer
      * @see by.thelittleone.mapreduce.core.client.MapReduce.Task
-     * @return количество подзадач.
      */
     @Override
     protected int getNumberOfSubTasks()
@@ -143,8 +148,10 @@ public class SocketMapReducer extends AbstractMapReducer
 
             T result;
 
-            try (Socket s = new Socket(addr, address.getPort())) {
-                if (!s.isConnected()) {
+            try (Socket s = new Socket(addr, address.getPort()))
+            {
+                if (!s.isConnected())
+                {
                     //сюда мы попадаем, если соединение не установилось
                     throw new ConnectException("Could not connect to server.");
                 }
@@ -166,6 +173,7 @@ public class SocketMapReducer extends AbstractMapReducer
 
     /**
      * Итератор, проходящий по коллекции аналогично "попрыгунчику".
+     *
      * @param <T> - тип элементов.
      */
     private class HoppingIterator<T>
@@ -181,16 +189,23 @@ public class SocketMapReducer extends AbstractMapReducer
 
         /**
          * Синхронизованный метод получения следующего элемента.
+         *
          * @return - элемент итератора.
          */
         public synchronized T get()
         {
 
-            if (!itr.hasNext()) {
+            // Нет следующего?
+            // Меняем направление.
+            if (!itr.hasNext())
+            {
                 direction = false;
             }
 
-            if (!itr.hasPrevious()) {
+            // Нет предыдущего?
+            // Меняем направление.
+            if (!itr.hasPrevious())
+            {
                 direction = true;
             }
 
@@ -208,7 +223,8 @@ public class SocketMapReducer extends AbstractMapReducer
         return itr.get();
     }
 
-    private void setNumberOfSubTasks(int numberOfSubTasks){
+    private void setNumberOfSubTasks(int numberOfSubTasks)
+    {
         this.numberOfSubTasks = numberOfSubTasks;
     }
 }

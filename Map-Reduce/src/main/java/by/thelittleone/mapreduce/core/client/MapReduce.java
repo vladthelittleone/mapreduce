@@ -7,17 +7,17 @@ import by.thelittleone.mapreduce.core.client.api.Reducible;
  * Project: Map-Reduce
  * Date: 19.03.14
  * Time: 1:17
- *
+ * <p/>
  * Интерфейс модели распределенных вычислений.
  * Используется для вычисления некоторых наборов распределенных задач
  * {@link by.thelittleone.mapreduce.core.client.MapReduce.Task} с использованием
  * большого количества компьютеров {@link by.thelittleone.mapreduce.core.server.AbstractExecutionPool}
  * (называемых «нодами»), образующих кластер. Работа MapReduce состоит из двух шагов: Map и Reduce.
  *
+ * @author Skurishin Vladislav
  * @see by.thelittleone.mapreduce.core.server.AbstractExecutionPool
  * @see by.thelittleone.mapreduce.core.client.AbstractMapReducer
  * @see by.thelittleone.mapreduce.core.client.MapReduce.Task
- * @author Skurishin Vladislav
  */
 public interface MapReduce
 {
@@ -27,7 +27,7 @@ public interface MapReduce
      * того же типа, который указан в джинерике задачи.
      *
      * @param task - задача для распределения и последующего выполнения.
-     * @param <T> - тип результата вычислений.
+     * @param <T>  - тип результата вычислений.
      * @return результат вычисления
      * @throws Exception - исключения зависят от реализации модели.
      */
@@ -39,9 +39,11 @@ public interface MapReduce
      * и интерфейс {@link by.thelittleone.mapreduce.core.client.api.Reducible}. Для использования реализаций
      * {@link by.thelittleone.mapreduce.core.client.MapReduce} достаточно создать задачу, реализующую данный интерфейс.
      *
+     * @param <T> - тип результата вычислений.
      * @see by.thelittleone.mapreduce.core.client.api.Reducible
      * @see by.thelittleone.mapreduce.core.client.api.Mappable
-     * @param <T> - тип результата вычислений.
      */
-    public static interface Task<T> extends Reducible<T>, Mappable<Task<T>> {}
+    public static interface Task<T> extends Reducible<T>, Mappable<Task<T>>
+    {
+    }
 }

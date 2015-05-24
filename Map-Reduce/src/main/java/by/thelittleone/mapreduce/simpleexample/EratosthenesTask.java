@@ -35,12 +35,14 @@ public class EratosthenesTask implements Task<Set<Integer>>, Serializable
     {
         Set<Task<Set<Integer>>> tasks = new HashSet<>(executorsNumber);
 
-        if (executorsNumber == 0) {
+        if (executorsNumber == 0)
+        {
             throw new IllegalStateException("Number of fragmentsNumber (servers) can not be zero.");
         }
 
         // при диапозоне равном нулю, возращаем одну задачу.
-        if (start == end) {
+        if (start == end)
+        {
             tasks.add(new EratosthenesTask(0, end));
             return tasks;
         }
@@ -51,10 +53,12 @@ public class EratosthenesTask implements Task<Set<Integer>>, Serializable
 
         // Если число фрагментов (серверов) больше
         // диапозона, приравниваем их
-        if (range < executorsNumber) {
+        if (range < executorsNumber)
+        {
             executorsNumber = range;
         }
-        else {
+        else
+        {
             // Кол-во равномерных распределнных задач на фрагмент (сервер)
             step = range / executorsNumber;
             // Остаток задач
@@ -63,11 +67,13 @@ public class EratosthenesTask implements Task<Set<Integer>>, Serializable
 
         int s = end;
 
-        for (int i = 1; i <= executorsNumber; i++) {
+        for (int i = 1; i <= executorsNumber; i++)
+        {
 
             int rStep = step - 1;
 
-            if (rest != 0) {
+            if (rest != 0)
+            {
                 rStep++;
                 // уменьшаем остаток задач
                 rest--;
@@ -103,7 +109,8 @@ public class EratosthenesTask implements Task<Set<Integer>>, Serializable
     {
         Set<Integer> reduce = new HashSet<>();
 
-        for (Set<Integer> result : results) {
+        for (Set<Integer> result : results)
+        {
             reduce.addAll(result);
         }
 
@@ -114,8 +121,10 @@ public class EratosthenesTask implements Task<Set<Integer>>, Serializable
     {
         Set<Integer> l = new HashSet<>();
 
-        for (int i = start; i <= end; i++) {
-            if (prime(i)) {
+        for (int i = start; i <= end; i++)
+        {
+            if (prime(i))
+            {
                 l.add(i);
             }
         }

@@ -17,7 +17,8 @@ import java.util.Set;
  * @see by.thelittleone.mapreduce.core.client.MapReduce.Task
  * @see by.thelittleone.mapreduce.core.client.AbstractMapReducer
  */
-public interface Reducible<T> {
+public interface Reducible<T>
+{
     /**
      * Метод, отвечающий за выполенение задачи, реализующей этот
      * интерфейс, и возвращающи результат вычисления.
@@ -30,7 +31,7 @@ public interface Reducible<T> {
      * Метод, отвечающий за объединение множества результатов выполенения
      * подзадач, в один, для основной задачи.
      *
-     * @param - множество результатов подзадач.
+     * @param results - множество результатов подзадач.
      * @return - возвращает результат для основной задачи.
      */
     T reduce(Set<T> results);

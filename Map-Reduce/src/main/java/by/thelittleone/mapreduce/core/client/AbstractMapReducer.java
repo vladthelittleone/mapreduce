@@ -24,7 +24,8 @@ import java.util.Set;
  * @see by.thelittleone.mapreduce.core.client.socket.SocketMapReducer
  * @see by.thelittleone.mapreduce.core.client.MapReduce
  */
-public abstract class AbstractMapReducer implements MapReduce {
+public abstract class AbstractMapReducer implements MapReduce
+{
 
     /**
      * Метод распределяет задачу на подзадачи, с помощью метода
@@ -43,16 +44,20 @@ public abstract class AbstractMapReducer implements MapReduce {
      * @see by.thelittleone.mapreduce.core.client.MapReduce
      * @see by.thelittleone.mapreduce.core.client.MapReduce.Task
      */
-    public final <T> T execute(final Task<T> task) throws Exception {
+    public final <T> T execute(final Task<T> task) throws Exception
+    {
 
         Set<Task<T>> tasks = null;
         Set<T> results = null;
 
-        try {
+        try
+        {
             tasks = map(task);
             results = sendToExecutor(tasks);
             validate(results, tasks);
-        } catch (CouldNotExecuteTaskException | CouldNotMapTaskException e) {
+        }
+        catch (CouldNotExecuteTaskException | CouldNotMapTaskException e)
+        {
             handleExecutionErrors(task, e);
         }
 
@@ -65,17 +70,20 @@ public abstract class AbstractMapReducer implements MapReduce {
      * @param results - результаты вычисления подзадач.
      * @param tasks   - множество подзадач.
      * @param <T>     - тип результата вычисления.
-     * @see by.thelittleone.mapreduce.core.client.exceptions.CouldNotExecuteTaskException
-     * @see by.thelittleone.mapreduce.core.client.exceptions.CouldNotMapTaskException
      * @throws CouldNotExecuteTaskException
      * @throws CouldNotMapTaskException
+     * @see by.thelittleone.mapreduce.core.client.exceptions.CouldNotExecuteTaskException
+     * @see by.thelittleone.mapreduce.core.client.exceptions.CouldNotMapTaskException
      */
-    private <T> void validate(Set<T> results, Set<Task<T>> tasks) throws CouldNotExecuteTaskException, CouldNotMapTaskException {
-        if (tasks == null || tasks.isEmpty()) {
+    private <T> void validate(Set<T> results, Set<Task<T>> tasks) throws CouldNotExecuteTaskException, CouldNotMapTaskException
+    {
+        if (tasks == null || tasks.isEmpty())
+        {
             throw new CouldNotMapTaskException("method map() can not return null or empty set.");
         }
 
-        if (results == null || results.isEmpty()) {
+        if (results == null || results.isEmpty())
+        {
             throw new CouldNotExecuteTaskException("method sendToExecutor() can not return null or empty set.");
         }
     }
@@ -92,8 +100,10 @@ public abstract class AbstractMapReducer implements MapReduce {
      * @return результат выполнения задачи.
      * @throws CouldNotExecuteTaskException
      */
-    protected <T> T handleExecutionErrors(Task<T> task, Exception e) throws CouldNotExecuteTaskException {
-        if (executeNotMappedTask()) {
+    protected <T> T handleExecutionErrors(Task<T> task, Exception e) throws CouldNotExecuteTaskException
+    {
+        if (executeNotMappedTask())
+        {
             return task.execute();
         }
         throw new CouldNotExecuteTaskException(e);
@@ -104,7 +114,7 @@ public abstract class AbstractMapReducer implements MapReduce {
      * Количество подзадач, которое нужно получить на выходе
      * определяется с помощью метода {@link #getNumberOfSubTasks()}.
      * Если метод возвращает <code>0<code/>, пробрасывается исключение
-     * {@link java.lang.IllegalAccessException}. Полученной кол-во в результате
+     * {@link java.lang.IllegalArgumentException}. Полученной кол-во в результате
      * используется при вызове метода {@link by.thelittleone.mapreduce.core.client.MapReduce.Task#getSubTasks(int)},
      * который совершает нужное нам разбиение в зависимости от реализации интерфейса задачи.
      *
@@ -113,10 +123,12 @@ public abstract class AbstractMapReducer implements MapReduce {
      * @return возвращает множество подзадач.
      * @throws java.lang.Exception
      */
-    private <T> Set<Task<T>> map(final Task<T> task) throws Exception {
+    private <T> Set<Task<T>> map(final Task<T> task) throws Exception
+    {
         int number = getNumberOfSubTasks();
 
-        if (number == 0) {
+        if (number == 0)
+        {
             throw new IllegalArgumentException("Number of sub tasks can not be null");
         }
 
@@ -130,7 +142,8 @@ public abstract class AbstractMapReducer implements MapReduce {
      * метод возвращает true, то, при ошибке, задача выполнится в потоке вызова класса, в случае
      * false, пробросится исключение {@link by.thelittleone.mapreduce.core.client.exceptions.CouldNotExecuteTaskException}
      */
-    protected boolean executeNotMappedTask() {
+    protected boolean executeNotMappedTask()
+    {
         return false;
     }
 

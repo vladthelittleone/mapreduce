@@ -21,7 +21,8 @@ import java.util.Set;
  * @see by.thelittleone.mapreduce.core.client.MapReduce
  * @see by.thelittleone.mapreduce.core.client.MapReduce.Task
  */
-public interface Mappable<T extends Task<?>> {
+public interface Mappable<T extends Task<?>>
+{
     // Пороговое значение
     int NO_LIMIT = 0;
     int LOW_LIMIT = 100;
@@ -34,8 +35,8 @@ public interface Mappable<T extends Task<?>> {
      * которые реализуют интерфейс {@link by.thelittleone.mapreduce.core.client.MapReduce.Task}.
      *
      * @param fragments - предел количества подзадач.
-     * @throws java.lang.Exception
      * @return множество подзадач.
+     * @throws java.lang.Exception
      */
     Set<T> getSubTasks(int fragments) throws Exception;
 

@@ -16,15 +16,15 @@ import java.util.concurrent.ForkJoinTask;
  * Project: Map-Reduce
  * Date: 19.03.14
  * Time: 0:26
- *
+ * <p/>
  * Класс - сокет сервер, отвечающий за запуск запуск полученных задач
  * c {@link by.thelittleone.mapreduce.core.client.socket.SocketMapReducer} с
  * помощью сокет соединения и возврата результатов вычислений. Является реализации
  * абстрактного класса {@link by.thelittleone.mapreduce.core.server.AbstractExecutionPool}.
  *
+ * @author Skurishin Vladislav
  * @see by.thelittleone.mapreduce.core.server.AbstractExecutionPool
  * @see by.thelittleone.mapreduce.core.client.socket.SocketMapReducer
- * @author Skurishin Vladislav
  */
 public class SocketExecutionPool extends AbstractExecutionPool
 {
@@ -33,7 +33,8 @@ public class SocketExecutionPool extends AbstractExecutionPool
 
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
-    public SocketExecutionPool(int port) throws Exception {
+    public SocketExecutionPool(int port) throws Exception
+    {
         super();
         this.port = port;
     }
@@ -56,20 +57,24 @@ public class SocketExecutionPool extends AbstractExecutionPool
      * Метод запускает прослушивание порта на предмет сокет соединения
      * {@link by.thelittleone.mapreduce.core.client.socket.SocketMapReducer},
      * передающего задание для выполнения.
+     *
      * @throws Exception
      */
     @Override
     protected void startExecution() throws Exception
     {
-        try (ServerSocket ss = new ServerSocket(port)) {
+        try (ServerSocket ss = new ServerSocket(port))
+        {
 
-            while (!isShutdown()) {
+            while (!isShutdown())
+            {
                 final Socket s = ss.accept();
                 System.out.println("Got a client :) ... Finally, someone saw me through all the cover!");
                 executorService.execute(new ResultSender(s));
             }
         }
-        catch (IOException e) {
+        catch (IOException e)
+        {
             throw new ConnectException(String.format("Execution while creation sever socket. %s", e.getMessage()));
         }
     }
@@ -101,7 +106,8 @@ public class SocketExecutionPool extends AbstractExecutionPool
         @Override
         public void run()
         {
-            try {
+            try
+            {
                 ObjectOutputStream objOut = new ObjectOutputStream(s.getOutputStream());
                 ObjectInputStream objIn = new ObjectInputStream(s.getInputStream());
 
@@ -117,7 +123,8 @@ public class SocketExecutionPool extends AbstractExecutionPool
                 objIn.close();
                 objOut.close();
             }
-            catch (ClassNotFoundException | IOException e) {
+            catch (ClassNotFoundException | IOException e)
+            {
                 e.printStackTrace();
             }
         }

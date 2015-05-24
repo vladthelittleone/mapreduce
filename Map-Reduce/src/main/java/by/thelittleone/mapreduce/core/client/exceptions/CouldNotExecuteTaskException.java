@@ -9,24 +9,30 @@ package by.thelittleone.mapreduce.core.client.exceptions;
  *
  * @author Skurishin Vladislav
  */
-public class CouldNotExecuteTaskException extends Exception {
-    public CouldNotExecuteTaskException() {
+public class CouldNotExecuteTaskException extends Exception
+{
+    public CouldNotExecuteTaskException()
+    {
         super();
     }
 
-    public CouldNotExecuteTaskException(String message) {
+    public CouldNotExecuteTaskException(String message)
+    {
         super(message);
     }
 
-    public CouldNotExecuteTaskException(String message, Throwable cause) {
+    public CouldNotExecuteTaskException(String message, Throwable cause)
+    {
         super(message, cause);
     }
 
-    public CouldNotExecuteTaskException(Throwable cause) {
+    public CouldNotExecuteTaskException(Throwable cause)
+    {
         super(cause);
     }
 
-    protected CouldNotExecuteTaskException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected CouldNotExecuteTaskException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace)
+    {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

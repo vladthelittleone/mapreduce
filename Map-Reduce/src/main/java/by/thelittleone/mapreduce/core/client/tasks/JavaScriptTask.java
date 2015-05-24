@@ -11,16 +11,16 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
-* Project: Map-Reduce
-* Date: 19.03.14
-* Time: 2:40
-* <p>
-* Нужно использовать jdk8!
-* Задача выполняемая на JavaScript с помощью Nashorn.
-* Неразделяемая на части.
-*
-* @author Skurishin Vladislav
-*/
+ * Project: Map-Reduce
+ * Date: 19.03.14
+ * Time: 2:40
+ * <p/>
+ * Нужно использовать jdk8!
+ * Задача выполняемая на JavaScript с помощью Nashorn.
+ * Неразделяемая на части.
+ *
+ * @author Skurishin Vladislav
+ */
 public class JavaScriptTask implements Task<Object>
 {
     private String initMethod;
@@ -46,16 +46,19 @@ public class JavaScriptTask implements Task<Object>
 
     /**
      * Выполняет Java Script метод {@link #initMethod}.
+     *
      * @return возврашает результат выполнения задачи.
      */
     @Override
     public Object execute()
     {
-        try {
+        try
+        {
             engine.eval(reader);
             return ((Invocable) engine).invokeFunction(initMethod);
         }
-        catch (ScriptException | NoSuchMethodException e) {
+        catch (ScriptException | NoSuchMethodException e)
+        {
             e.printStackTrace();
         }
 
@@ -76,7 +79,6 @@ public class JavaScriptTask implements Task<Object>
 
     /**
      * @param results возвращает результат выполнения задачи.
-     * @return
      */
     @Override
     public Object reduce(Set<Object> results)
@@ -85,10 +87,10 @@ public class JavaScriptTask implements Task<Object>
     }
 
     /**
-     * @see by.thelittleone.mapreduce.core.client.MapReduce
-     * @see by.thelittleone.mapreduce.core.client.AbstractMapReducer
      * @param fragments - предел количества подзадач.
      * @return возвращаем пустую коллекцию.
+     * @see by.thelittleone.mapreduce.core.client.MapReduce
+     * @see by.thelittleone.mapreduce.core.client.AbstractMapReducer
      */
     @Override
     public Set<Task<Object>> getSubTasks(int fragments)
@@ -97,9 +99,9 @@ public class JavaScriptTask implements Task<Object>
     }
 
     /**
+     * @return возвращаем 0, так как задача не делится.
      * @see java.util.concurrent.ForkJoinPool
      * @see by.thelittleone.mapreduce.core.server.AbstractExecutionPool
-     * @return возвращаем 0, так как задача не делится.
      */
     @Override
     public int limit()
