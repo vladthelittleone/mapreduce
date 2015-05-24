@@ -11,16 +11,19 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Project: Map-Reduce
- * Date: 19.03.14
- * Time: 2:40
- * <p/>
- * Нужно использовать jdk8!
- * Задача выполняемая на JavaScript с помощью Nashorn.
- * Неразделяемая на части.
- *
- * @author Skurishin Vladislav
- */
+* Project: Map-Reduce
+* Date: 19.03.14
+* Time: 2:40
+* <p>
+* Нужно использовать jdk8!
+* Задача выполняемая на JavaScript с помощью Nashorn.
+* Неразделяемая на части.
+*
+* @see by.thelittleone.mapreduce.core.client.MapReduce.Task 
+* @see by.thelittleone.mapreduce.core.client.MapReduce
+* @see by.thelittleone.mapreduce.core.client.AbstractMapReducer
+* @author Skurishin Vladislav
+*/
 public class JavaScriptTask implements Task<Object>
 {
     private String initMethod;
