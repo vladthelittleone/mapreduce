@@ -17,6 +17,6 @@ public class App
     public static void main(String[] args) throws Exception
     {
         AbstractMapReducer socketAbstractMapReducer = new SocketMapReducer(new FileAddressLoader("src/main/resources/addresses.txt"), 10);
-        System.out.println(socketAbstractMapReducer.execute(new EratosthenesTask(10)));
+        System.out.println(socketAbstractMapReducer.execute(new EratosthenesTask(5000)));
     }
 }

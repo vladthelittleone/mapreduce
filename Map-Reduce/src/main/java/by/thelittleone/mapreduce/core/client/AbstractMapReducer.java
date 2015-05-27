@@ -21,7 +21,7 @@ import java.util.Set;
  *
  * @author Skurishin Vladislav
  * @see by.thelittleone.mapreduce.core.server.AbstractExecutionPool
- * @see by.thelittleone.mapreduce.core.client.socket.SocketMapReducer
+ * @see by.thelittleone.mapreduce.core.client.socket.AbstractSocketMapReducer
  * @see by.thelittleone.mapreduce.core.client.MapReduce
  */
 public abstract class AbstractMapReducer implements MapReduce

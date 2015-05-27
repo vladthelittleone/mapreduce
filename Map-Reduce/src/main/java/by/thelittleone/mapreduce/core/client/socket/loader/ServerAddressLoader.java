@@ -10,10 +10,10 @@ import java.util.ListIterator;
  * Time: 2:06
  * <p/>
  * Интерфейс, отвечающий за загрузку адрессов удаленных сокет серверов
- * в {@link by.thelittleone.mapreduce.core.client.socket.SocketMapReducer}.
+ * в {@link by.thelittleone.mapreduce.core.client.socket.AbstractSocketMapReducer}.
  *
  * @author Skurishin Vladislav
- * @see by.thelittleone.mapreduce.core.client.socket.SocketMapReducer
+ * @see by.thelittleone.mapreduce.core.client.socket.AbstractSocketMapReducer
  * @see by.thelittleone.mapreduce.core.client.socket.loader.FileAddressLoader
  */
 public interface ServerAddressLoader

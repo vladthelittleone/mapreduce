@@ -18,13 +18,13 @@ import java.util.concurrent.ForkJoinTask;
  * Time: 0:26
  * <p/>
  * Класс - сокет сервер, отвечающий за запуск запуск полученных задач
- * c {@link by.thelittleone.mapreduce.core.client.socket.SocketMapReducer} с
+ * c {@link by.thelittleone.mapreduce.core.client.socket.AbstractSocketMapReducer} с
  * помощью сокет соединения и возврата результатов вычислений. Является реализации
  * абстрактного класса {@link by.thelittleone.mapreduce.core.server.AbstractExecutionPool}.
  *
  * @author Skurishin Vladislav
  * @see by.thelittleone.mapreduce.core.server.AbstractExecutionPool
- * @see by.thelittleone.mapreduce.core.client.socket.SocketMapReducer
+ * @see by.thelittleone.mapreduce.core.client.socket.AbstractSocketMapReducer
  */
 public class SocketExecutionPool extends AbstractExecutionPool
 {
@@ -55,7 +55,7 @@ public class SocketExecutionPool extends AbstractExecutionPool
 
     /**
      * Метод запускает прослушивание порта на предмет сокет соединения
-     * {@link by.thelittleone.mapreduce.core.client.socket.SocketMapReducer},
+     * {@link by.thelittleone.mapreduce.core.client.socket.AbstractSocketMapReducer},
      * передающего задание для выполнения.
      *
      * @throws Exception
@@ -91,7 +91,7 @@ public class SocketExecutionPool extends AbstractExecutionPool
 
     /**
      * Класс, реализующий {@link java.lang.Runnable}, который получает задание от
-     * сокета {@link by.thelittleone.mapreduce.core.client.socket.SocketMapReducer} и
+     * сокета {@link by.thelittleone.mapreduce.core.client.socket.AbstractSocketMapReducer} и
      * формирует {@link java.util.concurrent.ForkJoinTask} для выполнения и получения результата.
      */
     private class ResultSender implements Runnable
